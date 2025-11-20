@@ -75,8 +75,7 @@
       <script>
          const socket = io('http://localhost:3000')
 
-
-         /***** ABERTURA/FECHAMENTO DO FORMUÁRIO MODAL *****/
+         // Abertura e fechamento do modal
          let btn = document.getElementById('btn_post');
          let modal = document.getElementById("myModal");
          let span = document.getElementsByClassName("close")[0];
@@ -119,7 +118,7 @@
             $(`.post_content[data-id="${messageId}"]`).remove();
          });
          
-         // Envia nova mensagem ao servidor
+         // Formulário de envio de novo post
          $('#form_post').submit(function(event) {
             event.preventDefault();
             

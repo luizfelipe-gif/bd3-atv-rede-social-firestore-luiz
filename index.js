@@ -7,6 +7,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
 const admin = require('firebase-admin');
+
 const serviceAccount = require('./web-chat_luiz-firebase.json'); 
 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -17,25 +18,26 @@ app.use('/', (request, response) => {
 });
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
+   credential: admin.credential.cert(serviceAccount)
 });
 
-const db = admin.firestore(); // Agora 'db' é uma instância do Firestore do Admin SDK
+const db = admin.firestore();
 
-let postAnteriores = [];
+let postagensArmazenadas = [];
 
 function formatTimestamp(timestamp) {
-    if (timestamp && timestamp.toDate) {
-        return timestamp.toDate().toLocaleString('pt-BR');
-    }
-    return 'Data Indisponível';
+   if (timestamp && timestamp.toDate) {
+      return timestamp.toDate().toLocaleString('pt-BR');
+   }
+
+   return 'Data Indisponível';
 }
 
 db.collection('messages').get().then(snapshot => {
    snapshot.forEach(doc => {
       const postData = doc.data();
 
-      postAnteriores.push({
+      postagensArmazenadas.push({
          id: doc.id,
          autor: postData.autor,
          titulo: postData.titulo,
@@ -44,16 +46,16 @@ db.collection('messages').get().then(snapshot => {
       });
    });
 
-   postAnteriores.reverse();
+   postagensArmazenadas.reverse();
 })
 .catch(error => console.log('ERRO:', error));
 
 io.on('connection', socket => {
    console.log('ID de usuário conectado: ' + socket.id);
    
-   socket.emit('previousMessage', postAnteriores);
+   socket.emit('previousMessage', postagensArmazenadas); // Evento para buscar mensagens anteriores
    
-   socket.on('sendMessage', async data => {
+   socket.on('sendMessage', async data => { // Evento pra enviar novas mensagens
       try {
          const post = {
             autor: data.autor,
@@ -62,31 +64,31 @@ io.on('connection', socket => {
             timestamp: admin.firestore.FieldValue.serverTimestamp()
          };
          
-         const docRef = await db.collection('messages').add(post);
+         const postIndex = await db.collection('messages').add(post); // Buscar mensagens com indexamento pra cada uma
          
-         const newPostWithId = {
-            id: docRef.id,
+         const postagemComId = {
+            id: postIndex.id,
             autor: data.autor,
             titulo: data.titulo,
             texto: data.texto,
             data_hora: new Date().toLocaleString('pt-BR')
          };
          
-         postAnteriores.unshift(newPostWithId);
+         postagensArmazenadas.unshift(postagemComId); // Adiciona novas mensagens no início do array
          
-         io.emit('receivedMessage', newPostWithId);
+         io.emit('receivedMessage', postagemComId);
          
       } catch (error) {
          console.log('ERRO: ' + error);
       }
    });
    
-   socket.on('deleteMessage', async (postID) => {
+   socket.on('deleteMessage', async (postID) => { // Evento pra excluir mensagens
       try {
          await db.collection('messages').doc(postID).delete();
          console.log('Post excluído com ID:', postID);
 
-         postAnteriores = postAnteriores.filter(post => post.id !== postID); // Remove do array do servidor
+         postagensArmazenadas = postagensArmazenadas.filter(post => post.id !== postID); // Remove do array do servidor
          io.emit('messageDeleted', postID); // Notifica clientes sobre a exclusão
       } catch (error) {
          console.error('Erro ao excluir mensagem:', error);
