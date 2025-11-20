@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+
+<html lang="pt-br">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      
+      <title>FireSocial</title>
+      <link rel="shortcut icon" href="images/firebase.ico" type="images/x-icon">
+
+      <!-- Importa o arquivo CSS: -->
+      <link rel="stylesheet" href="styles.css">
+
+      <!-- Importa o Jquery para a aplicação frontend: -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.js"></script>
+
+      <!-- Importa o SocketIO para a aplicação frontend: -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.8.1/socket.io.js"></script>
+      
+   </head>
+
+   <body>
+      <header class="header_container">
+            <img src="./images/firebase.svg" />
+            <h1>FireSocial</h1>
+      </header>
+      
+      <div class="button_post_container">
+         <button name="btn_post" id="btn_post">Fazer novo post</button>
+      </div>
+
+      <div class="post_container"></div>
+
+      <!-- ESTRUTURA HTML DO FORMULÁRIO MODAL: -->
+      <div id="myModal" class="modal">
+         <div class="modal-content">
+            <div class="form_content">
+               <div class="form_post_title">
+                  <div></div>
+                  <h1>Fazer nova postagem</h1>
+                  <div></div>
+                  <span class="close" onclick="fecharModal()">&times;</span>
+               </div>
+
+               <form name="form_post" id="form_post">
+                  <div class="form-fields">
+                     <h3>Autor</h3>
+                     <input type="text" name="txt_autor" id="txt_autor" placeholder="Nome do autor(a)">
+                  </div>
+                  <div class="form-fields">
+                     <h3>Título</h3>
+                     <input type="text" name="txt_titulo" id="txt_titulo" placeholder="Defina um título">
+                  </div>
+                  <div class="form-fields">
+                     <h3>Mensagem</h3>
+                     <textarea type="text" name="txt_post" id="txt_post"  placeholder="Escreva sua mensagem..."></textarea>
+                  </div>
+               </form>
+
+               <div class="form-button">
+                  <button name="btn_retornar" id="btn_retornar" onclick="fecharModal()">
+                     <img src="images/return.svg" width="20" height="20">
+                     Retornar
+                  </button>
+
+                  <button type="submit" name="btn_postar" id="btn_postar" form="form_post">
+                     <img src="images/share.svg" width="24" height="24" onsubmit="fecharModal()">
+                     Postar
+                  </button>
+               </div>
+            </div>
+         </div>
+      </div>
+
+      <script>
+         const socket = io('http://localhost:3000')
+
+
+         /***** ABERTURA/FECHAMENTO DO FORMUÁRIO MODAL *****/
+         let btn = document.getElementById('btn_post');
+         let modal = document.getElementById("myModal");
+         let span = document.getElementsByClassName("close")[0];
+
+         
+         // Função onde vai renderizar cada mensagem no html
+         function renderMessage(message) {
+            const postContainer = $('.post_container');
+
+            postContainer.append(`
+            <article class="post_content" data-id="${message.id}">
+               <span class="post_text">
+                  <h2> <img src="images/double-arrow.svg" width="24" height="24"> ${message.titulo}</h2>
+                  <div class="post_info">
+                     <div> publicado por: <strong>${message.autor} </strong> em <strong> ${message.data_hora} </strong></div>
+                  </div>
+                  <div class="post_mensagem">
+                     <strong> Mensagem: </strong> ${message.texto}<br>
+                  </div>
+               </span>
+               <button class="delete_btn" data-id="${message.id}">Excluir</button>
+            </article>
+            `)
+         };
+ 
+         // Carrega todas as mensagens anteriores e exibe cada uma
+         socket.on('previousMessage', function(mensagens) {
+            for (message of mensagens) {
+               renderMessage(message);
+            };
+         });
+         
+         // Exibe novas mensagens
+         socket.on('receivedMessage', function(message) {
+            renderMessage(message);
+         });
+
+         // Remove mensagem quando notificado pelo servidor
+         socket.on('messageDeleted', function(messageId) {
+            $(`.post_content[data-id="${messageId}"]`).remove();
+         });
+         
+         // Envia nova mensagem ao servidor
+         $('#form_post').submit(function(event) {
+            event.preventDefault();
+            
+            var autor = $('input[name=txt_autor]').val();
+            var titulo = $('input[name=txt_titulo]').val();
+            var texto = $('textarea[name=txt_post]').val();
+            
+            if (autor.length && titulo.length && texto.length) {
+               let data_hora_obj = new Date();
+               
+               let data_hora_msg = `
+               ${data_hora_obj.getDate()}/${data_hora_obj.getMonth()}/${data_hora_obj.getFullYear()},
+               ${data_hora_obj.getHours()}:${data_hora_obj.getMinutes()}:${data_hora_obj.getSeconds()}`;
+               
+               var messageObject = {
+                  autor: autor,
+                  titulo: titulo,
+                  data_hora: data_hora_msg,
+                  texto: texto,
+               };
+               
+               renderMessage(messageObject);
+               socket.emit('sendMessage', messageObject);
+
+               // Limpar o formulário e fechar o modal
+               $('#form_post')[0].reset();
+               fecharModal();
+            };
+         });
+
+         // Abrir o modal do formulário
+         btn.addEventListener('click', function(event) {
+            event.preventDefault();
+            modal.style.display = "block";
+         });
+
+         // Fechar o modal do formulário
+         function fecharModal() {
+            modal.style.display= "none";
+         }
+      </script>
+   </body>
+</html>

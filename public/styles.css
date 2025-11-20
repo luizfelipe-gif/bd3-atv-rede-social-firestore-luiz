@@ -1,0 +1,222 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+* {
+   font-family: 'Inter', sans-serif;
+}
+
+html, body {
+   margin: 0;
+   padding: 0;
+   padding-bottom: 1vh;
+   border: 0;
+   background-color: rgb(168, 167, 157);
+}
+
+h2, h1 {
+   margin: 0;
+   padding: 0;
+}
+
+h2 {
+   height: 2.2rem;
+}
+
+button {
+   cursor: pointer;
+   background-color: rgb(87, 82, 10);
+   color: #FFF;
+   font-weight: bold;
+   width: 140px;
+}
+
+button:hover {
+   background-color: rgb(112, 107, 35) !important;
+}
+
+.header_container{
+   display: flex;
+   flex-direction: row;
+   align-items: center;
+   justify-content: center;
+   width: 100%;
+   background-color: rgb(87, 82, 10);
+   color: #FFF;
+   font-weight: bold;
+   padding: 50px 0px;
+}
+
+.header_container img{
+   width: 5vh;
+   margin-right: 10px;
+}
+
+.button_post_container{
+   background-color: #CCC;
+   text-align: right;
+   padding: 10px;
+}
+
+.button_post_container button{
+   border: 0;
+   border-radius: 5px;
+   padding: 10px;
+}
+
+/* CSS DO FORMULARIO MODAL DE CADASTRO DE POST: */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0,0,0);
+  background-color: rgba(0,0,0,0.4);
+}
+
+.close {
+  color: #777;
+  font-size: 2.5rem;
+  font-weight: normal;
+   text-align: center;
+
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+
+
+
+/* Header */
+
+
+
+
+/* Corpo */
+.post_container {
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
+   align-items: center;
+}
+
+.post_content{
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   background-color: #ffffff;
+   box-shadow: rgba(0, 0, 0, 0.247) 0px 10px 20px, rgba(0, 0, 0, 0.267) 0px 6px 6px;
+   border-radius: 13px;
+   max-width: 60vw;
+   width: 50vw;
+   margin-top: 15px;
+   padding: 20px;
+}
+
+.post_text {
+   justify-content: center;
+   align-items: center;
+   width: 85%;
+   
+   .post_info {
+      display: flex;
+      justify-content: space-between;
+      font-style: italic;
+      font-size: 0.85rem;
+      margin-bottom: 1vh;
+   }
+
+   .post_mensagem {
+      height: 3vh;
+      height: max-content;
+   }
+}
+
+/* Modal */
+.modal div, span, input {
+   font: 1rem / 2 sans-serif;
+}
+
+.form_post_title {
+   display: flex;
+   justify-content: space-around;
+   align-items: center;
+   span {
+      cursor: pointer;
+   }
+}
+
+.modal-content {
+   background-color: #fefefe;
+   margin: 4% auto;
+   padding: 20px;
+   border: 1px solid #888888;
+   box-shadow: 0px 0px 50px rgb(110, 110, 110) ;
+   width: 50vw;
+   max-width: 1000px;
+   border-radius: 10px;
+}
+
+.form_content {
+   width: 100%;
+}
+
+#form_post {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   flex-direction: column;    
+   width: 100%;
+}
+
+.form-fields {
+   width: 65%;
+   margin: 15px 0px;
+
+   h3 {
+      width: 15vw;
+      margin: 0px;
+   }
+
+   input, textarea {
+      width: 100%;
+      padding: 5px;
+      border: solid gray 1px;
+      border-radius: 0.25rem;
+   }
+   
+   input {
+      margin: 0px;
+   }
+   
+   textarea {
+      height: 23vh;
+      font: 1rem / 2 sans-serif;
+   }
+}
+
+.form-button {
+   display: flex;
+   justify-content: space-around;
+
+   button {
+      display: flex;
+      align-items: center;
+      font-weight: bold;
+      border: 0;
+      border-radius: 5px;
+      padding: 1rem;
+      img { padding: 0 10px;}
+   }
+
+   button:hover {
+      background-color: rgb(112, 107, 35);
+   }
+}
