@@ -1,1 +1,2 @@
 # bd3-atv4-rede-social-luiz-firebase
+Projeto de Rede Social utilizando Firebase como banco de dados não-relacional, além de tecnologias como NodeJS com Express (dentre outras) pra realizar operações de criação, listagem e remoção de posts.
